@@ -10,6 +10,7 @@ Library           RPA.Tables
 Library           RPA.PDF
 Library           RPA.Archive
 Library           OperatingSystem
+Library           RPA.Robocorp.Vault
 
 *** Tasks ***
 Order robots from RobotSpareBin Industries Inc
@@ -37,7 +38,8 @@ Fill the form
     Input Text    id:address    ${row}[Address]
 
 Open the robot order website
-    Open Available Browser    https://robotsparebinindustries.com/#/robot-order
+    ${secret}=    Get Secret    main_site
+    Open Available Browser    ${secret}[URL]
 
 Get orders
     Download    https://robotsparebinindustries.com/orders.csv    overwrite=True
@@ -51,7 +53,7 @@ Preview the robot
     Click Button    preview
 
 Submit the order
-    FOR    ${i}    IN RANGE    999999
+    FOR    ${i}    IN RANGE    999
         ${present}=    Run Keyword And Return Status    Element Should Be Visible    id=order
         Run Keyword If    ${present}    Click Button    order
         Exit For Loop If    ${present} == False
@@ -64,13 +66,13 @@ Store the receipt as a PDF file
     [Arguments]    ${row}
     Wait Until Element Is Visible    id:receipt
     ${receipt_results_html}=    Get Element Attribute    id:receipt    outerHTML
-    Html To Pdf    ${receipt_results_html}    ${OUTPUT_DIR}${/}temp/receipt${row}\.pdf
-    [Return]    ${OUTPUT_DIR}${/}temp/receipt${row}\.pdf
+    Html To Pdf    ${receipt_results_html}    ${OUTPUT_DIR}${/}temp/receipt${row}.pdf
+    [Return]    ${OUTPUT_DIR}${/}temp/receipt${row}.pdf
 
 Take a screenshot of the robot
     [Arguments]    ${row}
     Screenshot    css:#robot-preview-image    ${OUTPUT_DIR}${/}temp/robot-image${row}.jpg
-    [Return]    ${OUTPUT_DIR}${/}temp/robot-image${row}\.jpg
+    [Return]    ${OUTPUT_DIR}${/}temp/robot-image${row}.jpg
 
 Embed the robot screenshot to the receipt PDF file
     [Arguments]    ${screenshot}    ${pdf}
@@ -82,7 +84,7 @@ Create a ZIP file of the receipts
     Archive Folder With Zip
     ...    ${OUTPUT_DIR}${/}temp
     ...    ${zip_file_name}
-    Empty Directory    ${OUTPUT_DIR}${/}temp    #empty temp files no longer needed
+    Empty Directory    ${OUTPUT_DIR}${/}temp    #remove temp files no longer needed
 
 Close the Browser
     Close Browser
