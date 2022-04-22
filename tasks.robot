@@ -11,11 +11,14 @@ Library           RPA.PDF
 Library           RPA.Archive
 Library           OperatingSystem
 Library           RPA.Robocorp.Vault
+Library           RPA.Dialogs
 
 *** Tasks ***
 Order robots from RobotSpareBin Industries Inc
+    ${ordersURL}=    Collect Query From User
+    Log    ${ordersURL}
     Open the robot order website
-    ${orders}    Get orders
+    ${orders}    Get orders    ${ordersURL}
     FOR    ${row}    IN    @{orders}
         Close the annoying modal
         Fill the form    ${row}
@@ -39,10 +42,12 @@ Fill the form
 
 Open the robot order website
     ${secret}=    Get Secret    main_site
-    Open Available Browser    ${secret}[URL]
+    Open Available Browser    ${secret}[URL]    maximized=True    headless=True
+    #Maximize Browser Window
 
 Get orders
-    Download    https://robotsparebinindustries.com/orders.csv    overwrite=True
+    [Arguments]    ${ordersURL}
+    Download    ${ordersURL}    overwrite=True
     ${orders}    Read table from CSV    orders.csv    header=True
     [Return]    ${orders}
 
@@ -53,7 +58,7 @@ Preview the robot
     Click Button    preview
 
 Submit the order
-    FOR    ${i}    IN RANGE    999
+    FOR    ${i}    IN RANGE    50
         ${present}=    Run Keyword And Return Status    Element Should Be Visible    id=order
         Run Keyword If    ${present}    Click Button    order
         Exit For Loop If    ${present} == False
@@ -71,6 +76,8 @@ Store the receipt as a PDF file
 
 Take a screenshot of the robot
     [Arguments]    ${row}
+    Wait Until Element Is Visible    css:#robot-preview-image
+    Scroll Element Into View    css:.attribution
     Screenshot    css:#robot-preview-image    ${OUTPUT_DIR}${/}temp/robot-image${row}.jpg
     [Return]    ${OUTPUT_DIR}${/}temp/robot-image${row}.jpg
 
@@ -85,6 +92,11 @@ Create a ZIP file of the receipts
     ...    ${OUTPUT_DIR}${/}temp
     ...    ${zip_file_name}
     Empty Directory    ${OUTPUT_DIR}${/}temp    #remove temp files no longer needed
+
+Collect Query From User
+    Add text input    file    label=Please enter the URL of the orders CSV file
+    ${ordersURL}=    Run dialog
+    [Return]    ${ordersURL.file}
 
 Close the Browser
     Close Browser
