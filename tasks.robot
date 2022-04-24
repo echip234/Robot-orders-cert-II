@@ -43,7 +43,7 @@ Fill the form
 Open the robot order website
     ${secret}=    Get Secret    main_site
     Open Available Browser    ${secret}[URL]    maximized=True    headless=True
-    #Maximize Browser Window
+   
 
 Get orders
     [Arguments]    ${ordersURL}
@@ -58,7 +58,7 @@ Preview the robot
     Click Button    preview
 
 Submit the order
-    FOR    ${i}    IN RANGE    50
+    FOR    ${i}    IN RANGE    999
         ${present}=    Run Keyword And Return Status    Element Should Be Visible    id=order
         Run Keyword If    ${present}    Click Button    order
         Exit For Loop If    ${present} == False
