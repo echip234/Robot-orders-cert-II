@@ -12,7 +12,6 @@ Library           RPA.Archive
 Library           OperatingSystem
 Library           RPA.Robocorp.Vault
 Library           RPA.Dialogs
-#Test
 
 *** Tasks ***
 Order robots from RobotSpareBin Industries Inc
