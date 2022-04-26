@@ -43,7 +43,6 @@ Fill the form
 Open the robot order website
     ${secret}=    Get Secret    main_site
     Open Available Browser    ${secret}[URL]    maximized=True    headless=True
-   
 
 Get orders
     [Arguments]    ${ordersURL}
@@ -94,8 +93,8 @@ Create a ZIP file of the receipts
     Empty Directory    ${OUTPUT_DIR}${/}temp    #remove temp files no longer needed
 
 Collect Query From User
-    Add text input    file    label=Please enter the URL of the orders CSV file
-    ${ordersURL}=    Run dialog
+    Add text input    file    label=Please enter the URL of the orders file
+    ${ordersURL}=    Run dialog    height=240    width=600
     [Return]    ${ordersURL.file}
 
 Close the Browser
